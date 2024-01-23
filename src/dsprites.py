@@ -64,7 +64,8 @@ def disvae_feature_importance(
         os.makedirs(save_dir)
 
     # Define the computed metrics and create a csv file with appropriate headers
-    loss_list = [FactorKLoss(device=device), BetaHLoss(), BtcvaeLoss(is_mss=False, n_data=len(train_dataset))]
+    # loss_list = [FactorKLoss(device=device), BetaHLoss(), BtcvaeLoss(is_mss=False, n_data=len(train_dataset))]
+    loss_list = [FactorKLoss(device=device)]
     metric_list = [
         pearson_saliency,
         spearman_saliency,
