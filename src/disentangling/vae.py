@@ -8,6 +8,8 @@ from torch.nn import functional as F
 from utils.initialization import weights_init
 from .encoders import get_encoder
 from .decoders import get_decoder
+from disentangling.encoders import EncoderBurgess
+from disentangling.decoders import DecoderBurgess
 
 MODELS = ["Burgess"]
 
