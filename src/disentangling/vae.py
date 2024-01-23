@@ -139,15 +139,7 @@ class VAE(nn.Module):
                 test_loss.append(loss.cpu().numpy())
         return np.mean(test_loss)
 
-    def fit(
-        self,
-        device: torch.device,
-        train_loader: torch.utils.data.DataLoader,
-        test_loader: torch.utils.data.DataLoader,
-        save_dir: pathlib.Path,
-        n_epoch: int = 30,
-        patience: int = 10,
-    ) -> None:
+    def fit(self, device, train_loader, test_loader, save_dir, n_epoch=30, patience=10):
         self.to(device)
         optim = torch.optim.Adam(self.parameters(), lr=1e-03, weight_decay=1e-05)
         waiting_epoch = 0
@@ -160,25 +152,13 @@ class VAE(nn.Module):
                 image_batch = image_batch.to(device)
                 recon_batch, latent_dist, latent_sample = self.forward(image_batch)
     
-                # Check if loss function is FactorKLoss
-                if isinstance(self.loss_f, FactorKLoss):
-                    # Call the custom optimization for FactorKLoss
-                    loss = self.loss_f.call_optimize(
-                        data=image_batch,
-                        model=self,
-                        optimizer=optim,
-                        storer=None
-                    )
-                else:
-                    # For other loss functions
-                    loss = self.loss_f(
-                        data=image_batch,
-                        recon_data=recon_batch,
-                        latent_dist=latent_dist,
-                        is_train=True,
-                        storer=None,
-                        latent_sample=latent_sample
-                    )
+                # 直接使用 FactorKLoss 的 call_optimize 方法
+                loss = self.loss_f.call_optimize(
+                    data=image_batch,
+                    model=self,
+                    optimizer=optim,
+                    storer=None
+                )
     
                 optim.zero_grad()
                 loss.backward()
@@ -191,6 +171,7 @@ class VAE(nn.Module):
                 f"Epoch {epoch + 1}/{n_epoch} \t "
                 f"Train loss {avg_train_loss:.3g} \t Test loss {test_loss:.3g}"
             )
+    
 
             if test_loss >= best_test_loss:
                 waiting_epoch += 1
