@@ -17,8 +17,8 @@ from disentangeling_vae.vae import VAE
 from disentangeling_vae.encoder import EncoderBurgess
 from disentangeling_vae.decoder import DecoderBurgess
 from disentangeling_vae import BetaHLoss, BtcvaeLoss
-from lfxai.utils.datasets import DSprites
-from lfxai.utils.metrics import (
+from utils.datasets import DSprites
+from utils.metrics import (
     compute_metrics,
     cos_saliency,
     count_activated_neurons,
@@ -26,4 +26,4 @@ from lfxai.utils.metrics import (
     pearson_saliency,
     spearman_saliency,
 )
-from lfxai.utils.visualize import plot_vae_saliencies, vae_box_plots
+from utils.visualize import plot_vae_saliencies, vae_box_plots
