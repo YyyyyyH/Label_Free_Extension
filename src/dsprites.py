@@ -88,14 +88,12 @@ def disvae_feature_importance(
             dw = csv.DictWriter(csv_file, delimiter=",", fieldnames=headers)
             dw.writeheader()
 
-    for beta, loss, run in itertools.product(
-        beta_list, loss_list, range(1, n_runs + 1)
-    ):
+    for run in range(1, n_runs + 1):
         # Initialize vaes
         encoder = EncoderBurgess(img_size, dim_latent)
         decoder = DecoderBurgess(img_size, dim_latent)
-        loss.beta = beta
-        name = f"{str(loss)}-vae_beta{beta}_run{run}"
+        loss = FactorKLoss(device=device)
+        name = f"factorK-vae_run{run}"
         model = VAE(img_size, encoder, decoder, dim_latent, loss, name=name)
         logging.info(f"Now fitting {name}")
         model.fit(device, train_loader, test_loader, save_dir, n_epochs)
