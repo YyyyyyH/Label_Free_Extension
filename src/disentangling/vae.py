@@ -7,7 +7,7 @@ from torch.nn import functional as F
 import numpy as np
 import pathlib
 from pathlib import Path
-
+from tqdm import tqdm
 from utils.initialization import weights_init
 from .encoders import get_encoder
 from .decoders import get_decoder
