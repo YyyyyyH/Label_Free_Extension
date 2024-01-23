@@ -13,8 +13,10 @@ from captum.attr import GradientShap
 from utils.features import attribute_individual_dim
 from torch.utils.data import random_split
 
-from lfxai.models.images import VAE, DecoderBurgess, EncoderBurgess
-from lfxai.models.losses import BetaHLoss, BtcvaeLoss
+from disentangeling_vae.vae import VAE
+from disentangeling_vae.encoder import EncoderBurgess
+from disentangeling_vae.decoder import DecoderBurgess
+from disentangeling_vae import BetaHLoss, BtcvaeLoss
 from lfxai.utils.datasets import DSprites
 from lfxai.utils.metrics import (
     compute_metrics,
