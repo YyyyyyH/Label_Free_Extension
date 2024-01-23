@@ -16,7 +16,7 @@ from torch.utils.data import random_split
 from disentangeling_vae.vae import VAE
 from disentangeling_vae.encoder import EncoderBurgess
 from disentangeling_vae.decoder import DecoderBurgess
-from disentangeling_vae import BetaHLoss, BtcvaeLoss
+from disentangeling_vae.losses import BetaHLoss, BtcvaeLoss
 from utils.datasets import DSprites
 from utils.metrics import (
     compute_metrics,
