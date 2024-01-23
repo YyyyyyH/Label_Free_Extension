@@ -106,14 +106,15 @@ class VAE(nn.Module):
         train_loss = []
         for image_batch, _ in tqdm(dataloader, unit="batches", leave=False):
             image_batch = image_batch.to(device)
-            recon_batch, latent_dist, latent_batch = self.forward(image_batch)
-            loss = self.loss_f(
-                image_batch,
-                recon_batch,
-                latent_dist,
-                is_train=True,
-                storer=None,
-                latent_sample=latent_batch,
+            recon_batch, latent_dist, latent_sample = self.forward(image_batch)
+            
+            # 由于使用FactorKLoss，不再调用self.loss_f直接计算loss
+            # 而是使用call_optimize方法
+            loss = self.loss_f.call_optimize(
+                data=image_batch,
+                model=self,
+                optimizer=optimizer,
+                storer=None
             )
             optimizer.zero_grad()
             loss.backward()
@@ -150,64 +151,32 @@ class VAE(nn.Module):
     ) -> None:
         self.to(device)
         optim = torch.optim.Adam(self.parameters(), lr=1e-03, weight_decay=1e-05)
+        
+        # FactorKLoss的判别器也需要优化器
+        optim_d = self.loss_f.optimizer_d
+    
         waiting_epoch = 0
         best_test_loss = float("inf")
-    
         for epoch in range(n_epoch):
-            self.train()
-            train_loss = []
-            for image_batch, _ in train_loader:
-                image_batch = image_batch.to(device)
-                recon_batch, latent_dist, latent_sample = self.forward(image_batch)
-    
-                # Check if loss function is FactorKLoss
-                if isinstance(self.loss_f, FactorKLoss):
-                    # Call the custom optimization for FactorKLoss
-                    loss = self.loss_f.call_optimize(
-                        data=image_batch,
-                        model=self,
-                        optimizer=optim,
-                        storer=None
-                    )
-                else:
-                    # For other loss functions
-                    loss = self.loss_f(
-                        data=image_batch,
-                        recon_data=recon_batch,
-                        latent_dist=latent_dist,
-                        is_train=True,
-                        storer=None,
-                        latent_sample=latent_sample
-                    )
-    
-                optim.zero_grad()
-                loss.backward()
-                optim.step()
-                train_loss.append(loss.item())
-    
+            train_loss = self.train_epoch(device, train_loader, optim)
             test_loss = self.test_epoch(device, test_loader)
-            avg_train_loss = np.mean(train_loss)
+            
+            # 更新日志和保存逻辑
             logging.info(
                 f"Epoch {epoch + 1}/{n_epoch} \t "
-                f"Train loss {avg_train_loss:.3g} \t Test loss {test_loss:.3g}"
+                f"Train loss {train_loss:.3g} \t Test loss {test_loss:.3g} \t "
             )
-    
-
-            if test_loss >= best_test_loss:
-                waiting_epoch += 1
-                logging.info(
-                    f"No improvement over the best epoch \t Patience {waiting_epoch} / {patience}"
-                )
-            else:
-                logging.info(f"Saving the model in {save_dir}")
+            if test_loss < best_test_loss:
+                best_test_loss = test_loss
                 self.cpu()
                 self.save(save_dir)
                 self.to(device)
-                best_test_loss = test_loss.data
                 waiting_epoch = 0
-            if waiting_epoch == patience:
-                logging.info("Early stopping activated")
-                break
+            else:
+                waiting_epoch += 1
+                if waiting_epoch >= patience:
+                    break
+
 
     def save(self, directory: pathlib.Path) -> None:
         """Save a model and corresponding metadata.
