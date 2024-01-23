@@ -116,10 +116,9 @@ class VAE(nn.Module):
                 optimizer=optimizer,
                 storer=None
             )
-            optimizer.zero_grad()
-            loss.backward()
+            
             optimizer.step()
-            train_loss.append(loss.detach().cpu().numpy())
+            train_loss.append(loss.item())
         return np.mean(train_loss)
 
     def test_epoch(self, device: torch.device, dataloader: torch.utils.data.DataLoader):
