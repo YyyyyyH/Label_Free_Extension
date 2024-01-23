@@ -128,15 +128,13 @@ class VAE(nn.Module):
             for image_batch, _ in dataloader:
                 image_batch = image_batch.to(device)
                 recon_batch, latent_dist, latent_batch = self.forward(image_batch)
-                loss = self.loss_f(
-                    image_batch,
-                    recon_batch,
-                    latent_dist,
-                    is_train=True,
-                    storer=None,
-                    latent_sample=latent_batch,
-                )
-                test_loss.append(loss.cpu().numpy())
+                loss = self.loss_f.call_optimize(
+                        data=image_batch,
+                        model=self,
+                        optimizer=None,  # 不需要优化器，因为我们不更新判别器
+                        storer=None
+                    )
+                test_loss.append(loss.item())
         return np.mean(test_loss)
 
     def fit(
