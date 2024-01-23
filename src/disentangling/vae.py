@@ -10,6 +10,7 @@ from .encoders import get_encoder
 from .decoders import get_decoder
 from disentangling.encoders import EncoderBurgess
 from disentangling.decoders import DecoderBurgess
+from disentangling.losses import BaseLoss
 
 MODELS = ["Burgess"]
 
@@ -29,7 +30,7 @@ class VAE(nn.Module):
         encoder: EncoderBurgess,
         decoder: DecoderBurgess,
         latent_dim: int,
-        loss_f: BaseVAELoss,
+        loss_f: BaseLoss,
         name: str = "model",
     ):
         """Class which defines model and forward pass.
