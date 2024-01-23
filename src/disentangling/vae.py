@@ -153,8 +153,42 @@ class VAE(nn.Module):
         waiting_epoch = 0
         best_test_loss = float("inf")
         for epoch in range(n_epoch):
-            train_loss = self.train_epoch(device, train_loader, optim)
+            self.train()
+            train_loss = []
+            for image_batch, _ in train_loader:
+                image_batch = image_batch.to(device)
+                recon_batch, latent_dist, latent_sample = self.forward(image_batch)
+
+                # Check if loss function is FactorKLoss
+                if isinstance(self.loss_f, FactorKLoss):
+                    # Call the custom optimization for FactorKLoss
+                    loss = self.loss_f.call_optimize(
+                        data=image_batch,
+                        recon_data=recon_batch,
+                        latent_dist=latent_dist,
+                        is_train=True,
+                        storer=None,
+                        latent_sample=latent_sample,
+                        optimizer=optim
+                    )
+                else:
+                    # For other loss functions
+                    loss = self.loss_f(
+                        data=image_batch,
+                        recon_data=recon_batch,
+                        latent_dist=latent_dist,
+                        is_train=True,
+                        storer=None,
+                        latent_sample=latent_sample
+                    )
+
+                optim.zero_grad()
+                loss.backward()
+                optim.step()
+                train_loss.append(loss.item())
+                
             test_loss = self.test_epoch(device, test_loader)
+            avg_train_loss = np.mean(train_loss)
             logging.info(
                 f"Epoch {epoch + 1}/{n_epoch} \t "
                 f"Train loss {train_loss:.3g} \t Test loss {test_loss:.3g} \t "
