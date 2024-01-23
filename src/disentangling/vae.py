@@ -4,6 +4,7 @@ Module containing the main VAE class.
 import torch
 from torch import nn, optim
 from torch.nn import functional as F
+import numpy as np
 
 from utils.initialization import weights_init
 from .encoders import get_encoder
