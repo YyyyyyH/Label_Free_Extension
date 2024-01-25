@@ -110,6 +110,7 @@ class Encoder(nn.Module):
 
     def __init__(self, in_dim, h_dim, n_res_layers, res_h_dim):
         super(Encoder, self).__init__()
+        self.fc_mu = nn.Linear(h_dim, latent_dim)
         kernel = 4
         stride = 2
         self.conv_stack = nn.Sequential(
@@ -128,5 +129,12 @@ class Encoder(nn.Module):
 
     def forward(self, x):
         return self.conv_stack(x)
+
+    def mu(self, x):
+        x = self.forward(x)
+        x = x.view(x.size(0), -1)
+        mu = self.fc_mu(x)
+        return mu
+        
 
 
