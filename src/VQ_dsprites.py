@@ -13,7 +13,7 @@ from captum.attr import GradientShap
 from explanations.features import attribute_individual_dim
 from torch.utils.data import random_split
 
-from lfxai.models.images import vqvae, DecoderBurgess, EncoderBurgess
+from lfxai.models.images import VQVAE, DecoderBurgess, EncoderBurgess
 from lfxai.models.losses import BetaHLoss, BtcvaeLoss
 from lfxai.utils.datasets import DSprites
 from lfxai.utils.metrics import (
@@ -94,7 +94,7 @@ def disvae_feature_importance(
         decoder = DecoderBurgess(img_size, dim_latent)
         loss.beta = beta
         name = f"{str(loss)}-vae_beta{beta}_run{run}"
-        model = vqvae(img_size, encoder, decoder, dim_latent, loss, name=name)
+        model = VQVAE(img_size, encoder, decoder, dim_latent, loss, name=name)
         logging.info(f"Now fitting {name}")
         model.fit(device, train_loader, test_loader, save_dir, n_epochs)
         model.load_state_dict(torch.load(save_dir / (name + ".pt")), strict=False)
