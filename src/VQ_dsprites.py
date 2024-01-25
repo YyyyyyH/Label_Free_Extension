@@ -93,7 +93,7 @@ def disvae_feature_importance(
 
     for run in range(1, n_runs + 1):
         # Initialize vaes
-        name = f"{vqae_run{run}}"
+        name = f"vqae_run{run}"
         model = VQVAE(h_dim=6, res_h_dim=3, n_res_layers=3, n_embeddings = 6, embedding_dim=3, 1)
         logging.info(f"Now fitting {name}")
         model.fit(device, train_loader, test_loader, save_dir, n_epochs)
