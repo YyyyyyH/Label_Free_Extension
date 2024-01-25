@@ -9,7 +9,7 @@ from utils.initialization import weights_init
 class Discriminator(nn.Module):
     def __init__(self,
                  neg_slope=0.2,
-                 latent_dim=6,
+                 latent_dim=3,
                  hidden_units=1000):
         """Discriminator proposed in [1].
 

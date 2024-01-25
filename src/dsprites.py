@@ -32,10 +32,10 @@ def disvae_feature_importance(
     random_seed: int = 1,
     batch_size: int = 500,
     n_plots: int = 10,
-    n_runs: int = 5,
-    dim_latent: int = 6,
-    n_epochs: int = 100,
-    beta_list: list = [1, 5, 10],
+    n_runs: int = 2,
+    dim_latent: int = 3,
+    n_epochs: int = 2,
+    gamma_list: list = [1, 5, 10],
     test_split=0.1,
 ) -> None:
     # Initialize seed and device
@@ -80,7 +80,7 @@ def disvae_feature_importance(
         "Entropy",
         "Active Neurons",
     ]
-    headers = ["Loss Type", "Beta"] + metric_names
+    headers = ["Loss Type"] + metric_names
     csv_path = save_dir / "metrics.csv"
     if not csv_path.is_file():
         logging.info(f"Creating metrics csv in {csv_path}")
@@ -88,11 +88,11 @@ def disvae_feature_importance(
             dw = csv.DictWriter(csv_file, delimiter=",", fieldnames=headers)
             dw.writeheader()
 
-    for run in range(1, n_runs + 1):
+    for gamma, run in itertools.product(gamma_list, range(1, n_runs + 1)):
         # Initialize vaes
         encoder = EncoderBurgess(img_size, dim_latent)
         decoder = DecoderBurgess(img_size, dim_latent)
-        loss = FactorKLoss(device=device)
+        loss = FactorKLoss(device=device, gamma=gamma)
         name = f"factorK-vae_run{run}"
         model = VAE(img_size, encoder, decoder, dim_latent, loss, name=name)
         logging.info(f"Now fitting {name}")
@@ -114,7 +114,7 @@ def disvae_feature_importance(
         # Save the metrics
         with open(csv_path, "a", newline="") as csv_file:
             writer = csv.writer(csv_file, delimiter=",")
-            writer.writerow([str(loss), beta] + metrics)
+            writer.writerow([str(loss), gamma] + metrics)
 
         # Plot a couple of examples
         plot_idx = [n for n in range(n_plots)]

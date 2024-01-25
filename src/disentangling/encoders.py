@@ -87,3 +87,6 @@ class EncoderBurgess(nn.Module):
         mu, logvar = mu_logvar.view(-1, self.latent_dim, 2).unbind(-1)
 
         return mu, logvar
+        
+    def mu(self, x):
+        return self.forward(x)[0]
