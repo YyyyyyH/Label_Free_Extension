@@ -237,8 +237,6 @@ class FactorKLoss(BaseLoss):
         self.discriminator = Discriminator(**disc_kwargs).to(self.device)
         self.optimizer_d = optim.Adam(self.discriminator.parameters(), **optim_kwargs)
 
-    # def __call__(self, *args, **kwargs):
-    #     return self.call_optimize(data=data, model=self, optimizer=optimizer, storer=storer)
     def __call__(self, *args, **kwargs):
         raise ValueError("Use `call_optimize` to also train the discriminator")
 
