@@ -33,7 +33,7 @@ def disvae_feature_importance(
     batch_size: int = 500,
     n_plots: int = 10,
     n_runs: int = 2,
-    dim_latent: int = 3,
+    dim_latent: int = 6,
     n_epochs: int = 2,
     gamma_list: list = [1, 5, 10],
     test_split=0.1,
@@ -64,7 +64,6 @@ def disvae_feature_importance(
         os.makedirs(save_dir)
 
     # Define the computed metrics and create a csv file with appropriate headers
-    # loss_list = [FactorKLoss(device=device), BetaHLoss(), BtcvaeLoss(is_mss=False, n_data=len(train_dataset))]
     loss_list = [FactorKLoss(device=device)]
     metric_list = [
         pearson_saliency,
