@@ -21,7 +21,7 @@ import torch.nn as nn
 import numpy as np
 from disentangling.encoders import Encoder
 from disentangling.quantizer import VectorQuantizer
-from disentangling.decodersimport Decoder
+from disentangling.decoders import Decoder
 
 MODELS = ["Burgess"]
 
