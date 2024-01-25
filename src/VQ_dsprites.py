@@ -6,17 +6,17 @@ import os
 from pathlib import Path
 
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 import torch
 from captum.attr import GradientShap
-from explanations.features import attribute_individual_dim
+from utils.features import attribute_individual_dim
 from torch.utils.data import random_split
 
-from lfxai.models.images import VQVAE, DecoderBurgess, EncoderBurgess
-from lfxai.models.losses import BetaHLoss, BtcvaeLoss
-from lfxai.utils.datasets import DSprites
-from lfxai.utils.metrics import (
+from disentangling.vae import VQVAE
+from disentangling.encoders import EncoderBurgess
+from disentangling.decoders import DecoderBurgess
+from utils.datasets import DSprites
+from utils.metrics import (
     compute_metrics,
     cos_saliency,
     count_activated_neurons,
@@ -24,7 +24,12 @@ from lfxai.utils.metrics import (
     pearson_saliency,
     spearman_saliency,
 )
-from lfxai.utils.visualize import plot_vae_saliencies, vae_box_plots
+from utils.visualize import plot_vae_saliencies, vae_box_plots
+import torch.nn as nn
+import numpy as np
+from disentangling.encoders import Encoder
+from disentangling.quantizer import VectorQuantizer
+from disentangling.decoders import Decoder
 
 
 def disvae_feature_importance(
@@ -86,15 +91,10 @@ def disvae_feature_importance(
             dw = csv.DictWriter(csv_file, delimiter=",", fieldnames=headers)
             dw.writeheader()
 
-    for beta, loss, run in itertools.product(
-        beta_list, loss_list, range(1, n_runs + 1)
-    ):
+    for run in range(1, n_runs + 1):
         # Initialize vaes
-        encoder = EncoderBurgess(img_size, dim_latent)
-        decoder = DecoderBurgess(img_size, dim_latent)
-        loss.beta = beta
-        name = f"{str(loss)}-vae_beta{beta}_run{run}"
-        model = VQVAE(img_size, encoder, decoder, dim_latent, loss, name=name)
+        name = f"{vqae_run{run}"
+        model = VQVAE(h_dim=6, res_h_dim=3, n_res_layers=3, n_embeddings = 6, embedding_dim=3, 1)
         logging.info(f"Now fitting {name}")
         model.fit(device, train_loader, test_loader, save_dir, n_epochs)
         model.load_state_dict(torch.load(save_dir / (name + ".pt")), strict=False)
