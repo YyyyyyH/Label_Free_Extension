@@ -15,8 +15,8 @@ dependencies:
   - pillow
   - seaborn
   - pathlib  
-  - wget
   - pip
   - pip:
     - medmnist  
     - torch
+    - wget
