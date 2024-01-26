@@ -15,7 +15,7 @@ from torch.utils.data import DataLoader
 from torchvision import transforms
 from tqdm import tqdm
 
-from disentangling.losses import BaseVAELoss
+from disentangling.losses import BaseLoss
 from utils.datasets import CIFAR10Pair
 from utils.metrics import AverageMeter
 
