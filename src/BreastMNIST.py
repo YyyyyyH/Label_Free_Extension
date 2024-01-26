@@ -1,15 +1,12 @@
 import torch
 from pathlib import Path
-from torchvision.datasets import MNIST
 from torch.utils.data import DataLoader, Subset
 from torchvision import transforms
 from torch.nn import MSELoss
 from captum.attr import IntegratedGradients
 
-from lfxai.models.images import AutoEncoderMnist, EncoderMnist, DecoderMnist
-from lfxai.models.pretext import Identity
-from lfxai.explanations.features import attribute_auxiliary
-from lfxai.explanations.examples import SimplEx
+from utils.images import AutoEncoderMnist, EncoderMnist, DecoderMnist
+from explanations.features import attribute_auxiliary, attribute_individual_dim
 import argparse
 import csv
 import itertools
@@ -28,14 +25,14 @@ from scipy.stats import spearmanr
 from torch.utils.data import DataLoader, RandomSampler, Subset
 from torchvision import transforms
 
-from lfxai.explanations.examples import (
+from explanations.examples import (
     InfluenceFunctions,
     NearestNeighbours,
     SimplEx,
     TracIn,
 )
-from lfxai.explanations.features import attribute_auxiliary, attribute_individual_dim
-from lfxai.models.images import (
+
+from utils.images import (
     VAE,
     AutoEncoderMnist,
     ClassifierMnist,
@@ -44,11 +41,11 @@ from lfxai.models.images import (
     EncoderBurgess,
     EncoderMnist,
 )
-from lfxai.models.losses import BetaHLoss, BtcvaeLoss
-from lfxai.models.pretext import Identity, Mask, RandomNoise
-from lfxai.utils.datasets import MaskedMNIST
-from lfxai.utils.feature_attribution import generate_masks
-from lfxai.utils.metrics import (
+from disentangling.losses import BetaHLoss, BtcvaeLoss
+from utils.pretext import Identity, Mask, RandomNoise
+from utils.datasets import MaskedMNIST
+from utils.feature_attribution import generate_masks
+from utils.metrics import (
     compute_metrics,
     cos_saliency,
     count_activated_neurons,
@@ -57,7 +54,7 @@ from lfxai.utils.metrics import (
     similarity_rates,
     spearman_saliency,
 )
-from lfxai.utils.visualize import (
+from utils.visualize import (
     correlation_latex_table,
     plot_pretext_saliencies,
     plot_pretext_top_example,
