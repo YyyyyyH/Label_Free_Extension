@@ -1,6 +1,6 @@
 # Label-Free Explainability Extension for Unsupervised Models
 
-This repository is an extension of the work presented in "Label-Free Explainability for Unsupervised Models". The original paper can be found [here](https://arxiv.org/abs/2203.01928).
+This repository is an extension of the work presented in "Label-Free Explainability for Unsupervised Models". The original paper can be found [here](https://arxiv.org/abs/2203.01928). This repository's comprehensive findings and detailed analyses are encapsulated in a singular report, located in the ./Report directory for convenient access and reference.
 
 ## Installation
 
