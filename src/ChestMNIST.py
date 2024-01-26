@@ -26,7 +26,7 @@ from scipy.stats import spearmanr
 from torch.utils.data import DataLoader, RandomSampler, Subset
 from torchvision import transforms
 
-from lfxai.explanations.examples import (
+from utils.explanations.examples import (
     InfluenceFunctions,
     NearestNeighbours,
     SimplEx,
