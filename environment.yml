@@ -10,7 +10,6 @@ dependencies:
   - torchvision
   - captum  
   - pytorch
-  - hydra
   - tabulate
   - scipy
   - tqdm
@@ -22,3 +21,4 @@ dependencies:
     - medmnist  
     - torch
     - wget
+    - hydra
