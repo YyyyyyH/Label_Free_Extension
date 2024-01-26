@@ -838,7 +838,7 @@ class VAE(nn.Module):
         encoder: EncoderBurgess,
         decoder: DecoderBurgess,
         latent_dim: int,
-        loss_f: BaseVAELoss,
+        loss_f: BaseLoss,
         name: str = "model",
     ):
         """Class which defines model and forward pass.
