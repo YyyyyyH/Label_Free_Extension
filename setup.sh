@@ -1,11 +1,11 @@
 #!/bin/bash
 
+# Initialize Conda
 source ~/anaconda3/etc/profile.d/conda.sh
 
-# 创建并激活环境
+# Create and activate the environment
 conda env create -f environment.yml
 conda activate LFE
 
-# 安装其他依赖
+# Install additional dependencies
 conda install pytorch torchvision -c pytorch
-
