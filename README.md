@@ -2,40 +2,49 @@
 
 This repository is an extension of the work presented in "Label-Free Explainability for Unsupervised Models". The original paper can be found [here](https://arxiv.org/abs/2203.01928).
 
-## 1. Installation
+## Installation
 
-To set up the environment for running the extension code, please follow these steps:
+Set up your environment to run the extension code by following these instructions:
 
 ```bash
 conda env create -f environment.yml
 conda activate LFE
 ```
 
-## 2. Usage
+This will create a new Conda environment named 'LFE' with all the necessary dependencies.
 
-The main code for this project is stored in the `/src` directory. This project is divided into two primary parts:
+## Usage
+
+The repository's structure is primarily divided into two main sections, all located within the `/src` directory.
 
 ### Part 1: Medical Image Testing
 
-This includes tests on different types of medical images, such as:
+This section is focused on applying the concepts to various medical image datasets. To get started, you can run the following scripts:
 
-- `BreastMNIST.py`
-- `ChestMNIST.py`
-- `OrganSMNIST.py`
-  
-To run these files, use:
+- `BreastMNIST.py` for Breast MNIST dataset analysis.
+- `ChestMNIST.py` for Chest MNIST dataset analysis.
+- `OrganSMNIST.py` for Organ-Specific MNIST dataset analysis.
+
+To execute any of these scripts, navigate to the `/src` directory and run:
+
 ```bash
 python ./src/<filename>.py
 ```
+
+Replace `<filename>` with the respective script's name.
+
 ### Part 2: FactorVAE Experiment
 
-To run the FactorVAE experiments, use the following command:
+The FactorVAE experiment can be initiated with the command below:
 
 ```bash
 python ./src/dsprites.py
 ```
 
-### Running the Code
+This script conducts experiments using the FactorVAE model on the dSprites dataset.
 
-- Please ensure that you are in the root repository when executing these scripts.
-- All the outputs will be stored in the ../results directory.
+### General Instructions for Running Scripts
+
+- Ensure that you are in the root directory of the repository before executing any scripts.
+- All output files, including logs and results, will be automatically saved to the `../results` directory for easy access and review.
+
