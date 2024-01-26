@@ -21,4 +21,5 @@ dependencies:
     - medmnist  
     - torch
     - wget
+    - omegaconf
     - hydra
