@@ -6,8 +6,7 @@ from torch.nn import MSELoss
 from captum.attr import IntegratedGradients
 
 from utils.images import AutoEncoderMnist, EncoderMnist, DecoderMnist
-from utils.explanations.features import attribute_auxiliary, attribute_individual_dim
-from utils.explanations.examples import SimplEx
+from explanations.features import attribute_auxiliary, attribute_individual_dim
 import argparse
 import csv
 import itertools
@@ -26,7 +25,7 @@ from scipy.stats import spearmanr
 from torch.utils.data import DataLoader, RandomSampler, Subset
 from torchvision import transforms
 
-from utils.explanations.examples import (
+from explanations.examples import (
     InfluenceFunctions,
     NearestNeighbours,
     SimplEx,
