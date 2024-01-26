@@ -61,6 +61,8 @@ from utils.visualize import (
     plot_vae_saliencies,
     vae_box_plots,
 )
+# Load MedMNIST data
+from medmnist import ChestMNIST
 from medmnist import INFO, Evaluator
 
 # Select torch device
@@ -79,9 +81,6 @@ transformations = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.5] * n_channels, std=[0.5] * n_channels)
 ])
-
-# Load MedMNIST data
-from medmnist import ChestMNIST
 
 data_dir = Path.cwd() / "data" / data_flag
 
@@ -197,9 +196,9 @@ def consistency_feature_importance(
     plt.close()
 
 consistency_feature_importance(
-    random_seed=1,   # You can change these parameters as needed
+    random_seed=1,   
     batch_size=200,
-    dim_latent=4,   # Ensure this matches your model's latent dimension
+    dim_latent=4,  
     n_epochs=100
 )
 
