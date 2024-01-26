@@ -37,42 +37,6 @@ def init_vae(img_size, latent_dim, loss_f, name):
 
 
 class EncoderMnist(nn.Module):
-    """
-    This is the q_theta (z|x) network. Given a data sample x q_theta 
-    maps to the latent space x -> z.
-
-    For a VQ VAE, q_theta outputs parameters of a categorical distribution.
-
-    Inputs:
-    - in_dim : the input dimension
-    - h_dim : the hidden layer dimension
-    - res_h_dim : the hidden dimension of the residual block
-    - n_res_layers : number of layers to stack
-
-    """
-
-    def __init__(self, in_dim=1, h_dim=64, n_res_layers=3, res_h_dim=32):
-        super(EncoderMnist, self).__init__()
-        kernel = 4
-        stride = 2
-        self.conv_stack = nn.Sequential(
-            nn.Conv2d(in_dim, h_dim // 2, kernel_size=kernel,
-                      stride=stride, padding=1),
-            nn.ReLU(),
-            nn.Conv2d(h_dim // 2, h_dim, kernel_size=kernel,
-                      stride=stride, padding=1),
-            nn.ReLU(),
-            nn.Conv2d(h_dim, h_dim, kernel_size=kernel-1,
-                      stride=stride-1, padding=1),
-            ResidualStack(
-                h_dim, h_dim, res_h_dim, n_res_layers)
-
-        )
-
-    def forward(self, x):
-        return self.conv_stack(x)
-
-class EncoderMnist(nn.Module):
     def __init__(self, encoded_space_dim):
         super().__init__()
         self.encoder_cnn = nn.Sequential(
@@ -96,39 +60,7 @@ class EncoderMnist(nn.Module):
         x = self.encoder_lin(x)
         return x
 
-class Decoder(nn.Module):
-    """
-    This is the p_phi (x|z) network. Given a latent sample z p_phi 
-    maps back to the original space z -> x.
-
-    Inputs:
-    - in_dim : the input dimension
-    - h_dim : the hidden layer dimension
-    - res_h_dim : the hidden dimension of the residual block
-    - n_res_layers : number of layers to stack
-
-    """
-
-    def __init__(self, in_dim, h_dim, n_res_layers, res_h_dim):
-        super(Decoder, self).__init__()
-        kernel = 4
-        stride = 2
-
-        self.inverse_conv_stack = nn.Sequential(
-            nn.ConvTranspose2d(
-                in_dim, h_dim, kernel_size=kernel-1, stride=stride-1, padding=1),
-            ResidualStack(h_dim, h_dim, res_h_dim, n_res_layers),
-            nn.ConvTranspose2d(h_dim, h_dim // 2,
-                               kernel_size=kernel, stride=stride, padding=1),
-            nn.ReLU(),
-            nn.ConvTranspose2d(h_dim//2, 3, kernel_size=kernel,
-                               stride=stride, padding=1)
-        )
-
-    def forward(self, x):
-        return self.inverse_conv_stack(x)
-
-class cDecoderMnist(nn.Module):
+class DecoderMnist(nn.Module):
     def __init__(self, encoded_space_dim):
         super().__init__()
         self.decoder_lin = nn.Sequential(
@@ -156,161 +88,6 @@ class cDecoderMnist(nn.Module):
         return x
 
 class AutoEncoderMnist(nn.Module):
-    def __init__(self, h_dim, res_h_dim, n_res_layers,
-                 n_embeddings, embedding_dim, beta, save_img_embedding_map=False):
-        super(VQVAE, self).__init__()
-        # encode image into continuous latent space
-        self.encoder = Encoder(3, h_dim, n_res_layers, res_h_dim)
-        self.pre_quantization_conv = nn.Conv2d(
-            h_dim, embedding_dim, kernel_size=1, stride=1)
-        # pass continuous latent vector through discretization bottleneck
-        self.vector_quantization = VectorQuantizer(
-            n_embeddings, embedding_dim, beta)
-        # decode the discrete latent representation
-        self.decoder = Decoder(embedding_dim, h_dim, n_res_layers, res_h_dim)
-
-        if save_img_embedding_map:
-            self.img_to_embedding_map = {i: [] for i in range(n_embeddings)}
-        else:
-            self.img_to_embedding_map = None
-
-    def forward(self, x, verbose=False):
-
-        z_e = self.encoder(x)
-
-        z_e = self.pre_quantization_conv(z_e)
-        embedding_loss, z_q, perplexity, _, _ = self.vector_quantization(
-            z_e)
-        x_hat = self.decoder(z_q)
-
-        if verbose:
-            print('original data shape:', x.shape)
-            print('encoded data shape:', z_e.shape)
-            print('recon data shape:', x_hat.shape)
-            assert False
-
-        return x_hat
-
-    def train_epoch(
-        self,
-        device: torch.device,
-        dataloader: torch.utils.data.DataLoader,
-        optimizer: torch.optim.Optimizer,
-    ) -> np.ndarray:
-        self.train()
-        train_loss = []
-        for image_batch, _ in tqdm(dataloader, unit="batch", leave=False):
-            image_batch = image_batch.to(device)
-            recon_batch = self.forward(image_batch)
-            loss = self.loss_f(image_batch, recon_batch)
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
-            train_loss.append(loss.detach().cpu().numpy())
-        return np.mean(train_loss)
-
-    def test_epoch(self, device: torch.device, dataloader: torch.utils.data.DataLoader):
-        self.eval()
-        test_loss = []
-        with torch.no_grad():
-            for image_batch, _ in dataloader:
-                image_batch = image_batch.to(device)
-                pert_batch = self.input_pert(image_batch)
-                recon_batch = self.forward(pert_batch)
-                loss = self.loss_f(image_batch, recon_batch)
-                test_loss.append(loss.cpu().numpy())
-        return np.mean(test_loss)
-
-    def fit(
-        self,
-        device: torch.device,
-        train_loader: torch.utils.data.DataLoader,
-        test_loader: torch.utils.data.DataLoader,
-        save_dir: pathlib.Path,
-        n_epoch: int = 30,
-        patience: int = 10,
-        checkpoint_interval: int = -1,
-    ) -> None:
-        self.to(device)
-        self.lr = 1e-03
-        optim = torch.optim.Adam(self.parameters(), lr=self.lr, weight_decay=1e-05)
-        waiting_epoch = 0
-        best_test_loss = float("inf")
-        for epoch in range(n_epoch):
-            train_loss = self.train_epoch(device, train_loader, optim)
-            test_loss = self.test_epoch(device, test_loader)
-            logging.info(
-                f"Epoch {epoch + 1}/{n_epoch} \t "
-                f"Train loss {train_loss:.3g} \t Test loss {test_loss:.3g} \t "
-            )
-            if test_loss >= best_test_loss:
-                waiting_epoch += 1
-                logging.info(
-                    f"No improvement over the best epoch \t Patience {waiting_epoch} / {patience}"
-                )
-            else:
-                logging.info(f"Saving the model in {save_dir}")
-                self.cpu()
-                self.save(save_dir)
-                self.to(device)
-                best_test_loss = test_loss.data
-                waiting_epoch = 0
-            if checkpoint_interval > 0 and epoch % checkpoint_interval == 0:
-                n_checkpoint = 1 + epoch // checkpoint_interval
-                logging.info(f"Saving checkpoint {n_checkpoint} in {save_dir}")
-                path_to_checkpoint = (
-                    save_dir / f"{self.name}_checkpoint{n_checkpoint}.pt"
-                )
-                torch.save(self.state_dict(), path_to_checkpoint)
-                self.checkpoints_files.append(path_to_checkpoint)
-            if waiting_epoch == patience:
-                logging.info("Early stopping activated")
-                break
-
-    def save(self, directory: pathlib.Path) -> None:
-        """Save a model and corresponding metadata.
-
-        Parameters:
-        -----------
-        directory : pathlib.Path
-            Path to the directory where to save the data.
-        """
-        model_name = self.name
-        self.save_metadata(directory)
-        path_to_model = directory / (model_name + ".pt")
-        torch.save(self.state_dict(), path_to_model)
-
-    def load_metadata(self, directory: pathlib.Path) -> dict:
-        """Load the metadata of a training directory.
-
-        Parameters:
-        -----------
-        directory : pathlib.Path
-            Path to folder where model is saved. For example './experiments/mnist'.
-        """
-        path_to_metadata = directory / (self.name + ".json")
-
-        with open(path_to_metadata) as metadata_file:
-            metadata = json.load(metadata_file)
-        return metadata
-
-    def save_metadata(self, directory: pathlib.Path, **kwargs) -> None:
-        """Load the metadata of a training directory.
-
-        Parameters:
-        -----------
-        directory: string
-            Path to folder where to save model. For example './experiments/mnist'.
-        kwargs:
-            Additional arguments to `json.dump`
-        """
-        path_to_metadata = directory / (self.name + ".json")
-        metadata = {"latent_dim": self.latent_dim, "name": self.name}
-        with open(path_to_metadata, "w") as f:
-            json.dump(metadata, f, indent=4, sort_keys=True, **kwargs)
-
-
-class cAutoEncoderMnist(nn.Module):
     def __init__(
         self,
         encoder: EncoderMnist,
@@ -901,7 +678,6 @@ class BetaTcVaeMnist(nn.Module):
                 f"Epoch {epoch + 1}/{n_epoch} \t "
                 f"Train loss {train_loss:.3g} \t Test loss {test_loss:.3g} \t "
             )
-
 
 class EncoderBurgess(nn.Module):
     def __init__(self, img_size, latent_dim=10):
