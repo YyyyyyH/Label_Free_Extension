@@ -113,7 +113,7 @@ def disvae_feature_importance(
         # Save the metrics
         with open(csv_path, "a", newline="") as csv_file:
             writer = csv.writer(csv_file, delimiter=",")
-            writer.writerow([str(loss), gamma] + metrics)
+            writer.writerow([str(FactorKLoss), gamma] + metrics)
 
         # Plot a couple of examples
         plot_idx = [n for n in range(n_plots)]
