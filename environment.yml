@@ -1,0 +1,26 @@
+name: LFE
+channels:
+  - defaults
+dependencies:
+  - python=3.8  
+  - numpy
+  - pandas
+  - matplotlib
+  - torch
+  - torchvision
+  - captum
+  - scipy
+  - tqdm
+  - pillow  
+  - seaborn
+  - csv
+  - logging
+  - argparse
+  - itertools
+  - os
+  - pathlib
+  - wget  
+  - zipfile
+  - pip
+  - pip:
+    - medmnist  
