@@ -1,26 +1,21 @@
 name: LFE
 channels:
   - defaults
+  - pytorch  
 dependencies:
-  - python=3.8  
+  - python=3.8
   - numpy
   - pandas
   - matplotlib
   - torch
   - torchvision
-  - captum
+  - captum  
   - scipy
   - tqdm
-  - pillow  
+  - pillow
   - seaborn
-  - csv
-  - logging
-  - argparse
-  - itertools
-  - os
-  - pathlib
-  - wget  
-  - zipfile
+  - pathlib  
+  - wget
   - pip
   - pip:
-    - medmnist  
+    - medmnist 
