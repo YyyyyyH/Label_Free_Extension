@@ -192,7 +192,7 @@ def consistency_feature_importance(
         data=results_df, x="% Perturbed Pixels", y="Representation Shift", hue="Method"
     )
     plt.tight_layout()
-    plt.savefig(save_dir / "mnist_consistency_features.pdf")
+    plt.savefig(save_dir / "ChestMNIST_consistency_features.pdf")
     plt.close()
 
 consistency_feature_importance(
