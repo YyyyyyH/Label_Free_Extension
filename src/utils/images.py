@@ -15,9 +15,9 @@ from torch.utils.data import DataLoader
 from torchvision import transforms
 from tqdm import tqdm
 
-from lfxai.models.losses import BaseVAELoss
-from lfxai.utils.datasets import CIFAR10Pair
-from lfxai.utils.metrics import AverageMeter
+from disentangling.losses import BaseVAELoss
+from utils.datasets import CIFAR10Pair
+from utils.metrics import AverageMeter
 
 """
  These models are adapted from
