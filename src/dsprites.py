@@ -32,7 +32,7 @@ def disvae_feature_importance(
     random_seed: int = 1,
     batch_size: int = 500,
     n_plots: int = 10,
-    n_runs: int = 3,
+    n_runs: int = 2,
     dim_latent: int = 6,
     n_epochs: int = 20,
     gamma_list: list = [5, 10],
