@@ -38,3 +38,4 @@ python ./src/dsprites.py
 ### Running the Code
 
 Please ensure that you are in the root repository when executing these scripts.
+All the outputs will be stored in the ../results directory.
