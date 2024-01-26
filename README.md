@@ -22,19 +22,17 @@ This includes tests on different types of medical images, such as:
 - `BreastMNIST.py`
 - `ChestMNIST.py`
 - `OrganSMNIST.py`
-
+  
+To run these files, use:
+```bash
+python ./src/<filename>.py
+```
 ### Part 2: FactorVAE Experiment
 
 To run the FactorVAE experiments, use the following command:
 
 ```bash
 python ./src/dsprites.py
-```
-
-For other files in the `/src` directory, use:
-
-```bash
-python ./src/<filename>.py
 ```
 
 ### Running the Code
