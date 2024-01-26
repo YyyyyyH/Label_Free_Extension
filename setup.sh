@@ -4,7 +4,7 @@
 source ~/anaconda3/etc/profile.d/conda.sh
 
 # Create the LFE environment with specified dependencies
-conda create -n LFE python=3.8 numpy pandas matplotlib scipy tqdm pillow seaborn pathlib wget -y -c pytorch -c defaults
+conda create -n LFE python=3.8 numpy pandas matplotlib scipy tqdm pillow torch seaborn pathlib wget -y -c pytorch -c defaults
 conda activate LFE
 
 # Install PyTorch and torchvision
