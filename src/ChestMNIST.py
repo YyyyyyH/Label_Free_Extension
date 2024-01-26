@@ -1,15 +1,13 @@
 import torch
 from pathlib import Path
-from torchvision.datasets import MNIST
 from torch.utils.data import DataLoader, Subset
 from torchvision import transforms
 from torch.nn import MSELoss
 from captum.attr import IntegratedGradients
 
-from lfxai.models.images import AutoEncoderMnist, EncoderMnist, DecoderMnist
-from lfxai.models.pretext import Identity
-from lfxai.explanations.features import attribute_auxiliary
-from lfxai.explanations.examples import SimplEx
+from utils.images import AutoEncoderMnist, EncoderMnist, DecoderMnist
+from utils.explanations.features import attribute_auxiliary, attribute_individual_dim
+from utils.explanations.examples import SimplEx
 import argparse
 import csv
 import itertools
@@ -34,8 +32,8 @@ from lfxai.explanations.examples import (
     SimplEx,
     TracIn,
 )
-from lfxai.explanations.features import attribute_auxiliary, attribute_individual_dim
-from lfxai.models.images import (
+
+from utils.images import (
     VAE,
     AutoEncoderMnist,
     ClassifierMnist,
@@ -44,11 +42,11 @@ from lfxai.models.images import (
     EncoderBurgess,
     EncoderMnist,
 )
-from lfxai.models.losses import BetaHLoss, BtcvaeLoss
-from lfxai.models.pretext import Identity, Mask, RandomNoise
-from lfxai.utils.datasets import MaskedMNIST
-from lfxai.utils.feature_attribution import generate_masks
-from lfxai.utils.metrics import (
+from disentangling.losses import BetaHLoss, BtcvaeLoss
+from utils.pretext import Identity, Mask, RandomNoise
+from utils.datasets import MaskedMNIST
+from utils.feature_attribution import generate_masks
+from utils.metrics import (
     compute_metrics,
     cos_saliency,
     count_activated_neurons,
@@ -57,21 +55,19 @@ from lfxai.utils.metrics import (
     similarity_rates,
     spearman_saliency,
 )
-from lfxai.utils.visualize import (
+from utils.visualize import (
     correlation_latex_table,
     plot_pretext_saliencies,
     plot_pretext_top_example,
     plot_vae_saliencies,
     vae_box_plots,
 )
+from medmnist import INFO, Evaluator
 
 # Select torch device
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
-from medmnist import INFO, Evaluator
-
-
-# Select the MedMNIST subset you want to use
+# Select chestmnist subset from the MedMNIST 
 data_flag = 'chestmnist'  # for example, use 'pathmnist' for patholog images
 info = INFO['chestmnist']
 task = info['task']
