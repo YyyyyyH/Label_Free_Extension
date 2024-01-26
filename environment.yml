@@ -9,6 +9,7 @@ dependencies:
   - matplotlib
   - torchvision
   - captum  
+  - pytorch
   - scipy
   - tqdm
   - pillow
