@@ -32,10 +32,10 @@ def disvae_feature_importance(
     random_seed: int = 1,
     batch_size: int = 500,
     n_plots: int = 10,
-    n_runs: int = 5,
+    n_runs: int = 1,
     dim_latent: int = 6,
-    n_epochs: int = 20,
-    gamma_list: list = [1, 5, 10],
+    n_epochs: int = 1,
+    gamma_list: list = [10],
     test_split=0.1,
 ) -> None:
     # Initialize seed and device
