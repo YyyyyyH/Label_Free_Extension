@@ -92,7 +92,7 @@ def disvae_feature_importance(
         encoder = EncoderBurgess(img_size, dim_latent)
         decoder = DecoderBurgess(img_size, dim_latent)
         loss = FactorKLoss(device=device, gamma=gamma)
-        name = f"factorK-vae_run{run}"
+        name = f"factorK_vae_run{run}_gamma{gamma}"
         model = VAE(img_size, encoder, decoder, dim_latent, loss, name=name)
         logging.info(f"Now fitting {name}")
         model.fit(device, train_loader, test_loader, save_dir, n_epochs)
